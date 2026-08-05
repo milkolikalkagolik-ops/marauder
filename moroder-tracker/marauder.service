@@ -1,0 +1,13 @@
+[Unit]
+Description=Мародёр Трекер
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/opt/marauder
+ExecStart=python3 /opt/marauder/run.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

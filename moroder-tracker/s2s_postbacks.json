@@ -1,0 +1,34 @@
+{
+  "Clickadu.com": {
+    "s2s_postback_url": "http://sconvtrk.com/conversion/REPLACE_PERSONAL_HASH/?visitor_id={external_id}&aid=REPLACE_AID"
+  },
+  "Evadav.com": {
+    "s2s_postback_url": "https://evadav.com/phpb?click_id={external_id}&payout={conversion_revenue}"
+  },
+  "Kadam.net": {
+    "s2s_postback_url": "https://kdtrk.net/ru/postback/?data={external_id}&cost={revenue}&status={status}"
+  },
+  "Octoclick.com": {
+    "s2s_postback_url": "https://s2s.octoclick.com/postback?uuid={external_id}&cost={conversion_revenue}&status=approved&currency=USD&a_s=approved&p_s=process&c_s=canceled"
+  },
+  "Push.house": {
+    "s2s_postback_url": "http://api.push.house/v1/postback?click_id={external_id}&cost={conversion_revenue}"
+  },
+  "Propellerads.com": {
+    "s2s_postback_url": "http://ad.propellerads.com/conversion.php?aid=REPLACE&tid=REPLACE&pid=&visitor_id={external_id}"
+  },
+  "Tacolo.co": {
+    "s2s_postback_url": "https://postback.tacolo.co/conversion?user=replace&cid={external_id}&sum={conversion_revenue}"
+  },
+  "RollerAds": {
+    "s2s_postback_url": "https://api.rollerads.com/v1/postback?click_id={external_id}&payout={conversion_revenue}"
+  },
+  "Adsterra": {
+    "s2s_postback_url": "https://adsterra.com/postback?click_id={external_id}&cost={conversion_revenue}"
+  },
+  "Facebook": {},
+  "Google Ads": {},
+  "TikTok": {},
+  "Mgid": {},
+  "Taboola": {}
+}

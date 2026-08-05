@@ -1,0 +1,438 @@
+================================================================================
+ MARAUDER TRACKER v2.0 — Documentation
+================================================================================
+
+1. INTRODUCTION
+   Marauder Tracker is a self-hosted performance marketing tracker built for
+   affiliate marketers and media buyers. It handles click tracking, cloaking,
+   JS challenge, conversion attribution, and provides a clean dark-themed UI.
+   Written in Python (Flask), it uses SQLite by default and is designed to run
+   on a single VPS behind Nginx + Cloudflare.
+
+2. SYSTEM REQUIREMENTS
+   - Ubuntu 20.04+ or Debian 11+
+   - Python 3.10+
+   - Nginx (recommended)
+   - SSL certificate (Cloudflare Flexible or Let's Encrypt)
+
+3. INSTALLATION
+   1. Clone or upload the Marauder code to /opt/moroder-tracker/
+   2. Install Python dependencies:
+      pip install flask werkzeug psutil requests
+   3. Create a systemd service:
+      [Unit]
+      Description=Marauder Tracker
+      After=network.target
+      [Service]
+      User=root
+      WorkingDirectory=/opt/moroder-tracker
+      ExecStart=/usr/bin/python3 /opt/moroder-tracker/app.py
+      Restart=always
+      [Install]
+      WantedBy=multi-user.target
+   4. Enable and start: systemctl enable marauder && systemctl start marauder
+   5. Configure Nginx to proxy to localhost:5000
+   6. Set your domain in Settings -> Domains
+
+4. INITIAL SETUP
+   - Default login: admin / admin
+   - Change password immediately in Settings -> Users
+   - Add your first domain in Settings -> Domains (e.g., net-gorus.com)
+   - Create an affiliate network template (or load from the built-in library)
+   - Add an offer and a lander, then create a campaign
+
+5. DASHBOARD OVERVIEW
+   The main menu provides access to:
+   - Campaigns
+   - Click Log
+   - Traffic Sources
+   - Affiliate Networks
+   - Landers
+   - Offers
+   - Groups
+   - Manual Ops
+   - Settings (Domains, Users, Server, Trash, Postback Log, Conversion Log)
+   All tables support pagination and sorting.
+
+6. CAMPAIGNS
+   A campaign ties together a lander, an offer, a traffic source and an
+   affiliate network. You can enable JS Challenge, set S2S postback URL,
+   assign tags and countries. Campaigns support cloaking rules and
+   percentage-based traffic splitting (paths).
+   - "Create" opens a dedicated page with all settings.
+   - Click the 🔗 icon to get the campaign click URL.
+   - Deleting a campaign moves it to the Trash (Settings -> Trash).
+
+7. LANDERS
+   Landers can be of type URL, ZIP upload, or custom HTML.
+   For ZIP uploads, specify the index file (e.g., index.html).
+   Each lander can have tags and be assigned to a group.
+   Landers are served via the tracker: http://your-domain/lander/<id>/<file>
+
+8. OFFERS
+   Offers store the affiliate link, payout, country, caps, and a default
+   lander. When a campaign has no lander selected, the tracker will redirect
+   directly to the offer URL, passing the click_id as sub1.
+
+9. TRAFFIC SOURCES
+   Define traffic sources (e.g., Push.House, Facebook) with URL template and
+   optional API key for spend synchronization (Push.House API only).
+
+10. AFFILIATE NETWORKS
+    Store the URL template and postback URL template for each CPA network.
+    Use the "Templates" button to load pre-configured templates from
+    affiliate_networks.json (140+ networks). The {host} placeholder is
+    replaced automatically with your primary domain.
+
+11. RULES AND CLOAKING
+    Rules allow you to redirect or block traffic based on country, device, OS,
+    browser, connection type, or bot keywords. Rules are evaluated in priority
+    order. If no rule matches, the default lander/offer of the campaign is
+    used. You can also create percentage-based paths (random split) directly
+    in the campaign creation page.
+
+12. JS CHALLENGE
+    A lightweight JavaScript check that filters out basic bots. When enabled
+    in a campaign, the user sees a themed loading screen (ship, wheel, stars)
+    for 2 seconds while a simple arithmetic challenge is solved. Successful
+    verification redirects to the lander. Failed attempts return 403.
+    The challenge page contains no text, only visual elements.
+
+13. POSTBACKS AND TRACKING
+    Click URL format:
+      http://your-domain/click?camp=CAMPAIGN_NAME&click_id=EXTERNAL_CLICK_ID
+    The tracker generates an internal click_id and records the click.
+    Postback URL (for CPA network):
+      http://your-domain/postback?click_id=INTERNAL_CLICK_ID&payout=VALUE
+    The tracker updates the lead status to 'approved' and records the
+    conversion. If the campaign has an S2S postback URL configured, the
+    tracker will also forward the conversion to that URL using the external
+    click_id.
+
+    All postbacks are logged in Settings -> Postback Log with full parameters.
+
+14. MANUAL OPERATIONS
+    In Manual Ops you can manually add a conversion (lead) or add spend to a
+    campaign. This is useful for testing or for offline conversions.
+
+15. SETTINGS
+    The Settings page is organized in tabs:
+    - Domains: manage tracker domains, set default, delete.
+    - Server: CPU, RAM, Disk, Load, Uptime.
+    - Users: create, edit, delete users with roles (admin, manager, guest).
+    - Documentation: displays this file (doc.txt).
+    - Trash: view and restore deleted campaigns, landers, offers. Auto-delete
+      after N days (configurable).
+    - Postback Log: every incoming postback with status, IP, parameters.
+    - Conversion Log: full conversion details with all available macros.
+
+16. TAGS AND GROUPS
+    Tags are predefined (with colors) and can be extended with custom tags.
+    They can be assigned to campaigns, landers, and offers. Groups are used
+    to organize landers and offers. You can create groups on the fly when
+    creating/editing a lander or offer.
+
+17. TROUBLESHOOTING
+    - 500 error on /rules: ensure RULES_HTML template is present in app.py.
+    - Clicks are not recorded: check Nginx config for X-Forwarded-For header.
+    - Postbacks not processed: verify that the CPA network sends click_id and
+      payout parameters correctly. Check Postback Log for details.
+    - Database locked: under very high load, consider migrating to PostgreSQL.
+    - JS challenge redirects to example.com: make sure the campaign has a
+      lander selected and the lander file/URL is accessible.
+
+18. FAQ
+    Q: How many clicks per day can Marauder handle?
+    A: With SQLite, about 1-2 million per day on a decent VPS. With
+       PostgreSQL and Redis queue, it scales to 20+ million.
+
+    Q: Can I use Marauder for Facebook ads?
+    A: Yes, the cloaking rules and JS challenge work for any traffic source.
+
+    Q: How do I backup my tracker?
+    A: Copy the tracker.db file and the landers/ folder. All configuration
+       is stored in the database.
+
+19. SUPPORT
+    Telegram: @marasgiv
+
+============================================================
+Marauder Tracker API – Complete Documentation for Automation
+Version 1.0
+============================================================
+
+1. GENERAL INFORMATION
+------------------------------------------------------------
+Base URL: https://yourdomain.com (replace with your actual domain)
+All API endpoints start with /api/
+API responses are in JSON format.
+Successful responses always contain a "success": true field.
+On error, returns {"error": "description"} with HTTP status 400 or 500.
+
+2. AUTHORIZATION
+------------------------------------------------------------
+There are two ways to send your API key:
+
+2.1. Via the X-API-Key header (recommended for POST/PUT/DELETE)
+  Example:
+  curl -H "X-API-Key: YOUR_API_KEY" https://yourdomain.com/api/campaigns
+
+2.2. Via URL parameter ?api_key=
+  Example:
+  https://yourdomain.com/api/campaigns?api_key=YOUR_API_KEY
+
+IMPORTANT: The API key is generated in the web interface:
+  Settings → Users → click the "🔑" button next to the desired user.
+  The new key is shown only once – copy it immediately!
+  If the key is compromised, generate a new one.
+
+3. REQUEST AND RESPONSE FORMAT
+------------------------------------------------------------
+For POST/PUT requests, the body must be JSON.
+The Content-Type: application/json header is mandatory.
+The response is a JSON object:
+  Success: {"success": true, "data": [...]} or {"success": true, "id": 123}
+  Error: {"error": "description"}
+
+The examples below are given as PowerShell commands (Windows) – you can copy and paste them.
+If you use curl on Linux/Mac, the syntax is similar:
+  curl -X GET "https://yourdomain.com/api/campaigns?api_key=YOUR_KEY"
+
+
+4. CAMPAIGNS
+------------------------------------------------------------
+Get list of all active campaigns
+Invoke-RestMethod -Uri "https://yourdomain.com/api/campaigns?api_key=YOUR_API_KEY"
+
+Create a campaign
+$body = @{
+    name = "Campaign Name"
+    lander_id = 1              # landing ID (optional)
+    traffic_source_id = 1      # traffic source ID (optional)
+    offer_id = 2               # offer ID (optional)
+    affiliate_network_id = 3   # affiliate network ID (optional)
+    domain_id = 1              # domain ID (optional)
+    group_id = 2               # group ID (optional)
+    tags = "tag1,tag2"         # comma-separated tags
+    countries = @("KZ","RU")   # array of country codes
+    js_challenge_enabled = $true
+    js_challenge_level = "easy"
+    ip_blacklist = "1.2.3.4,5.6.7.8"
+    ip_whitelist = "10.0.0.1"
+    s2s_postback_url = "https://example.com/postback"
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri "https://yourdomain.com/api/campaigns" `
+  -Method Post `
+  -Headers @{"X-API-Key"="YOUR_API_KEY"; "Content-Type"="application/json"} `
+  -Body $body
+
+Get campaign details (replace 42 with actual ID)
+Invoke-RestMethod -Uri "https://yourdomain.com/api/campaigns/42?api_key=YOUR_API_KEY"
+
+Update a campaign (you can send only the fields to change)
+$update = @{ name = "New name"; group_id = 3 } | ConvertTo-Json
+Invoke-RestMethod -Uri "https://yourdomain.com/api/campaigns/42" `
+  -Method Put `
+  -Headers @{"X-API-Key"="YOUR_API_KEY"; "Content-Type"="application/json"} `
+  -Body $update
+
+Archive a campaign (move to trash)
+Invoke-RestMethod -Uri "https://yourdomain.com/api/campaigns/42" `
+  -Method Delete `
+  -Headers @{"X-API-Key"="YOUR_API_KEY"}
+
+Restore from trash
+Invoke-RestMethod -Uri "https://yourdomain.com/api/campaigns/42/restore" `
+  -Method Post `
+  -Headers @{"X-API-Key"="YOUR_API_KEY"}
+
+Clone a campaign (creates a copy with "(copy)" suffix)
+$clone = Invoke-RestMethod -Uri "https://yourdomain.com/api/campaigns/42/clone" `
+  -Method Post `
+  -Headers @{"X-API-Key"="YOUR_API_KEY"}
+Write-Host "New campaign ID: $($clone.id)"
+
+Get campaign statistics for a period
+Parameters period: today, yesterday, 3days, week, month, year, all, custom
+For custom, specify start and end in YYYY-MM-DD format
+Invoke-RestMethod -Uri "https://yourdomain.com/api/campaigns/42/stats?api_key=YOUR_API_KEY&period=today"
+Invoke-RestMethod -Uri "https://yourdomain.com/api/campaigns/42/stats?api_key=YOUR_API_KEY&period=custom&start=2026-07-01&end=2026-07-31"
+
+Clean archive (permanently deletes all campaigns from trash – CAREFUL!)
+Invoke-RestMethod -Uri "https://yourdomain.com/api/campaigns/clean_archive" `
+  -Method Post `
+  -Headers @{"X-API-Key"="YOUR_API_KEY"}
+
+
+5. LANDINGS
+------------------------------------------------------------
+List
+Invoke-RestMethod -Uri "https://yourdomain.com/api/landers?api_key=YOUR_API_KEY"
+
+Create
+$body = @{ name = "Landing"; url = "https://example.com"; type = "url" } | ConvertTo-Json
+Invoke-RestMethod -Uri "https://yourdomain.com/api/landers" `
+  -Method Post -Headers @{"X-API-Key"="YOUR_API_KEY"; "Content-Type"="application/json"} -Body $body
+
+Details
+Invoke-RestMethod -Uri "https://yourdomain.com/api/landers/1?api_key=YOUR_API_KEY"
+
+Update
+$update = @{ name = "New name" } | ConvertTo-Json
+Invoke-RestMethod -Uri "https://yourdomain.com/api/landers/1" `
+  -Method Put -Headers @{"X-API-Key"="YOUR_API_KEY"; "Content-Type"="application/json"} -Body $update
+
+Archive
+Invoke-RestMethod -Uri "https://yourdomain.com/api/landers/1" `
+  -Method Delete -Headers @{"X-API-Key"="YOUR_API_KEY"}
+
+Restore
+Invoke-RestMethod -Uri "https://yourdomain.com/api/landers/1/restore" `
+  -Method Post -Headers @{"X-API-Key"="YOUR_API_KEY"}
+
+Clone
+Invoke-RestMethod -Uri "https://yourdomain.com/api/landers/1/clone" `
+  -Method Post -Headers @{"X-API-Key"="YOUR_API_KEY"}
+
+Clean archive
+Invoke-RestMethod -Uri "https://yourdomain.com/api/landers/clean_archive" `
+  -Method Post -Headers @{"X-API-Key"="YOUR_API_KEY"}
+
+
+6. OFFERS
+------------------------------------------------------------
+List
+Invoke-RestMethod -Uri "https://yourdomain.com/api/offers?api_key=YOUR_API_KEY"
+
+Create
+$body = @{ name = "Offer"; url = "https://offer.com"; payout = 1.5; country = "KZ" } | ConvertTo-Json
+Invoke-RestMethod -Uri "https://yourdomain.com/api/offers" `
+  -Method Post -Headers @{"X-API-Key"="YOUR_API_KEY"; "Content-Type"="application/json"} -Body $body
+
+Details, update, archive, restore, clone, clean archive –
+work the same as for landings, just replace /api/landers with /api/offers
+
+
+7. TRAFFIC SOURCES
+------------------------------------------------------------
+List
+Invoke-RestMethod -Uri "https://yourdomain.com/api/traffic_sources?api_key=YOUR_API_KEY"
+
+Create
+$body = @{ name = "Source"; type = "postback"; s2s_postback_url = "https://postback.com" } | ConvertTo-Json
+Invoke-RestMethod -Uri "https://yourdomain.com/api/traffic_sources" `
+  -Method Post -Headers @{"X-API-Key"="YOUR_API_KEY"; "Content-Type"="application/json"} -Body $body
+
+Delete source (permanently) – replace 1 with ID
+Invoke-RestMethod -Uri "https://yourdomain.com/api/traffic_sources/1" `
+  -Method Delete -Headers @{"X-API-Key"="YOUR_API_KEY"}
+
+Other actions (GET, PUT, clone) – similar to campaigns.
+
+
+8. AFFILIATE NETWORKS
+------------------------------------------------------------
+List
+Invoke-RestMethod -Uri "https://yourdomain.com/api/affiliate_networks?api_key=YOUR_API_KEY"
+
+Create
+$body = @{ name = "Network" } | ConvertTo-Json
+Invoke-RestMethod -Uri "https://yourdomain.com/api/affiliate_networks" `
+  -Method Post -Headers @{"X-API-Key"="YOUR_API_KEY"; "Content-Type"="application/json"} -Body $body
+
+All methods (GET, PUT, DELETE, clone) – similar to traffic sources.
+
+
+9. GROUPS
+------------------------------------------------------------
+List
+Invoke-RestMethod -Uri "https://yourdomain.com/api/groups?api_key=YOUR_API_KEY"
+
+Create
+$body = @{ name = "Group" } | ConvertTo-Json
+Invoke-RestMethod -Uri "https://yourdomain.com/api/groups" `
+  -Method Post -Headers @{"X-API-Key"="YOUR_API_KEY"; "Content-Type"="application/json"} -Body $body
+
+All methods (GET, PUT, DELETE) – similar.
+
+
+10. TRAFFIC COSTS
+------------------------------------------------------------
+Add manual cost entry
+$cost = @{
+    traffic_source_id = 1
+    date = "2026-07-31"
+    cost = 5.5
+    impressions = 1000   # can be 0
+    clicks = 50          # can be 0
+} | ConvertTo-Json
+Invoke-RestMethod -Uri "https://yourdomain.com/api/traffic_costs" `
+  -Method Post -Headers @{"X-API-Key"="YOUR_API_KEY"; "Content-Type"="application/json"} -Body $cost
+
+Get cost history (can filter)
+source_id – source ID, date_from/date_to – dates in YYYY-MM-DD
+Invoke-RestMethod -Uri "https://yourdomain.com/api/traffic_costs?source_id=1&date_from=2026-07-01&date_to=2026-07-31&api_key=YOUR_API_KEY"
+
+
+11. BOT LIST (Global IP lists)
+------------------------------------------------------------
+Get current blacklist and whitelist
+Invoke-RestMethod -Uri "https://yourdomain.com/api/botlist?api_key=YOUR_API_KEY"
+
+Update both lists at once
+$lists = @{ blacklist = "1.2.3.4,5.6.7.8"; whitelist = "10.0.0.1" } | ConvertTo-Json
+Invoke-RestMethod -Uri "https://yourdomain.com/api/botlist" `
+  -Method Put -Headers @{"X-API-Key"="YOUR_API_KEY"; "Content-Type"="application/json"} -Body $lists
+
+Add a single IP to blacklist
+Invoke-RestMethod -Uri "https://yourdomain.com/api/botlist/add" `
+  -Method Post -Headers @{"X-API-Key"="YOUR_API_KEY"; "Content-Type"="application/json"} -Body '{"ip":"9.9.9.9"}'
+
+Remove IP from blacklist
+Invoke-RestMethod -Uri "https://yourdomain.com/api/botlist/exclude" `
+  -Method Post -Headers @{"X-API-Key"="YOUR_API_KEY"; "Content-Type"="application/json"} -Body '{"ip":"1.2.3.4"}'
+
+Clear both lists completely
+Invoke-RestMethod -Uri "https://yourdomain.com/api/botlist" `
+  -Method Delete -Headers @{"X-API-Key"="YOUR_API_KEY"}
+
+
+12. CLICK AND CONVERSION LOGS
+------------------------------------------------------------
+Last 10 clicks (can filter by campaign_id, dates)
+Invoke-RestMethod -Uri "https://yourdomain.com/api/clicks/log?limit=10&api_key=YOUR_API_KEY"
+
+Clicks for a specific campaign over a period
+Invoke-RestMethod -Uri "https://yourdomain.com/api/clicks/log?campaign_id=42&date_from=2026-07-01&date_to=2026-07-31&api_key=YOUR_API_KEY"
+
+Last 5 conversions
+Invoke-RestMethod -Uri "https://yourdomain.com/api/conversions/log?limit=5&api_key=YOUR_API_KEY"
+
+Conversions for a campaign over a period
+Invoke-RestMethod -Uri "https://yourdomain.com/api/conversions/log?campaign_id=42&date_from=2026-07-01&date_to=2026-07-31&api_key=YOUR_API_KEY"
+
+
+13. RESPONSE CODES
+------------------------------------------------------------
+200 – OK (body contains JSON with success)
+400 – Bad request (missing required fields, invalid JSON)
+401 – Unauthorized (invalid or missing API key)
+404 – Object not found
+500 – Internal server error (contact developer if recurring)
+
+
+14. AUTOMATION TIPS
+------------------------------------------------------------
+- For bulk campaign creation, use loops in PowerShell or Python.
+- To avoid overloading the server, do not exceed 10 requests per second.
+- Always check the response for success before proceeding.
+- For Python, use the requests library:
+
+import requests
+headers = {"X-API-Key": "YOUR_API_KEY"}
+r = requests.get("https://yourdomain.com/api/campaigns", headers=headers)
+print(r.json())
+================================================================================
+ END OF DOCUMENTATION
+================================================================================

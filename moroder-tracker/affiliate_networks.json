@@ -1,0 +1,550 @@
+{
+  "Dr.Cash": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&payout={payment}&cnv_status={status}"
+  },
+  "Leadbit": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&payout={cost}&cnv_status={status}"
+  },
+  "Everad": {
+    "url_template": "{offer_url}?sid1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sid1}&payout={payout}&currency={currency}&cnv_status={status}"
+  },
+  "KMA.biz": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&payout={profit}&cnv_status={status}"
+  },
+  "Advertise": {
+    "url_template": "{offer_url}?tid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={tid}&payout={amount}&cnv_status={status}&currency={currency}"
+  },
+  "M1-shop.ru": {
+    "url_template": "{offer_url}?s={click_id}",
+    "postback_template": "http://{host}/postback?click_id={s}&payout={web_total}&cnv_status={status}"
+  },
+  "Zeydoo": {
+    "url_template": "{offer_url}?ymid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={ymid}&payout={amount}&cnv_status={goal}"
+  },
+  "Mobidea": {
+    "url_template": "{offer_url}?pub_click_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={{EXTERNAL_ID}}&payout={{MONEY}}"
+  },
+  "MyLead": {
+    "url_template": "{offer_url}?ml_sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id=[ml_sub1]&payout=[payout]"
+  },
+  "ClickDealer": {
+    "url_template": "{offer_url}?s2={click_id}",
+    "postback_template": "http://{host}/postback?click_id=#s2#&payout=#price#"
+  },
+  "Mobipium": {
+    "url_template": "{offer_url}?tid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={tid}&payout={pay}"
+  },
+  "Adcombo": {
+    "url_template": "{offer_url}?sr=1&clickid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={clickid}&payout={revenue}&cnv_status=LEAD_HOLD_REJECT"
+  },
+  "Adtrafico.com": {
+    "url_template": "{offer_url}?aff_sub={click_id}",
+    "postback_template": "http://{host}/postback?click_id={aff_sub}&payout={payout}"
+  },
+  "CPA.RU": {
+    "url_template": "{offer_url}?clickid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={clickid}&payout={revenue}&cnv_status=hold_confirmed_reject"
+  },
+  "EpicAds.Net": {
+    "url_template": "{offer_url}?clickid={click_id}&cost={clickcost}&sub1={t1}&sub2={t2}&sub3={t4}&sub4={t5}",
+    "postback_template": "http://{host}/postback?click_id={user_click_id}&payout={cost}&cnv_status=lead"
+  },
+  "Offerrum": {
+    "url_template": "{offer_url}/{click_id}",
+    "postback_template": "http://{host}/postback?click_id={subid1}&payout={summ_total}&currency={currency}&cnv_status={status}"
+  },
+  "3snet": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&payout={sum}&cnv_status={status}"
+  },
+  "12monkiss": {
+    "url_template": "{offer_url}?click_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={click_id}&payout={sum}"
+  },
+  "Adbees.com": {
+    "url_template": "{offer_url}?sub_id1={click_id}",
+    "postback_template": "http://{host}/postback?click_id=[sub_id1]&payout=[price]&cnv_status=[status]&currency=[currency]"
+  },
+  "AdsEmpire": {
+    "url_template": "{offer_url}?subid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={subid}&payout={payout}&cnv_currency={currency}"
+  },
+  "Advidi": {
+    "url_template": "{offer_url}?s2={click_id}",
+    "postback_template": "http://{host}/postback?click_id=#s2#&payout=#price#"
+  },
+  "Aff1": {
+    "url_template": "{offer_url}?clickid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={clickid}&payout={payout_usd}&cnv_status={type}"
+  },
+  "Affiliate Dragons": {
+    "url_template": "{offer_url}?click_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={click_id}&payout={price}"
+  },
+  "Affi.co": {
+    "url_template": "{offer_url}?ref_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={ref_id}&payout={sum}&cnv_status={status}"
+  },
+  "Affmy": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}"
+  },
+  "Affpro": {
+    "url_template": "{offer_url}?aff_click_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={aff_click_id}&payout={payout}&cnv_currency={offer_currency}&cnv_status={goal_alias}"
+  },
+  "Affstar": {
+    "url_template": "{offer_url}?sub_id1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub_id1}&payout={amount}&cnv_status={status}"
+  },
+  "Affsub2": {
+    "url_template": "{offer_url}?sub2={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub2}&payout={sum}"
+  },
+  "Aivix": {
+    "url_template": "{offer_url}?aff_sub={click_id}",
+    "postback_template": "http://{host}/postback?click_id={aff_sub}&payout={cost}&cnv_status={status}"
+  },
+  "Alfaleads": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&payout={sum}&cnv_status={status}"
+  },
+  "Banzai Partners": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&payout={payout}&cnv_currency={currency}&cnv_status={status}"
+  },
+  "Banzai partners (Revshare)": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&status={sale}&payout={rs_profit}&currency=usd&sub_id_12={dep_count}&sub_id_13={dep_sum}&sub_id_14={bid_win}&tid={id}&sub_id_16={bid_loss}&sub_id_17={bid_win}&sub_id_18={gambler}&from=banzai.partners(revshare)"
+  },
+  "Big Bang Ads": {
+    "url_template": "{offer_url}?aff_sub2={click_id}",
+    "postback_template": "http://{host}/postback?click_id={aff_sub2}"
+  },
+  "Bomboffers": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&payout={sum}"
+  },
+  "CityAds": {
+    "url_template": "{offer_url}?sa={click_id}",
+    "postback_template": "http://{host}/postback?click_id={subaccount}&payout={payout}&cnv_status={status}"
+  },
+  "Click2Money": {
+    "url_template": "{offer_url}?subid1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={subid1}&payout={payout}"
+  },
+  "Clicklead.network": {
+    "url_template": "{offer_url}?sub_id_1={click_id}&sub_id_2={t2}&sub_id_3={t3}&sub_id_4={t4}",
+    "postback_template": "http://{host}/postback?click_id={sub_id_1}&payout={_income}&cnv_status=CHANGE_STATUS"
+  },
+  "CMaffiliates": {
+    "url_template": "{offer_url}?sub2={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub2}&payout={payout_amount}"
+  },
+  "Convert2media": {
+    "url_template": "{offer_url}?s2={click_id}",
+    "postback_template": "http://{host}/postback?click_id=#s2#&payout=#price#"
+  },
+  "Cpa.house": {
+    "url_template": "{offer_url}?sub_id_1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub_id_1}"
+  },
+  "CPAecom": {
+    "url_template": "{offer_url}?sub_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub_id}&cnv_status={status}&payout={payment}"
+  },
+  "Cpabazuka": {
+    "url_template": "{offer_url}&sub_id3={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub_id3}&payout={payout}&cnv_status={conv_status}"
+  },
+  "cpaecom.com": {
+    "url_template": "{offer_url}?sub_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub_id}"
+  },
+  "Cpagetti": {
+    "url_template": "{offer_url}/{click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&payout={money}&cnv_status={status}"
+  },
+  "CPARK": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}"
+  },
+  "CPI CASH": {
+    "url_template": "{offer_url}?pub_click_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id=#{click.publisher.clickId}&payout=#{payout.weGetInDollars}&cnv_status=#{status.state}"
+  },
+  "Cryp.im": {
+    "url_template": "{offer_url}?click_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={click_id}&payout={payout}&cnv_status={status}"
+  },
+  "Dao.Ad": {
+    "url_template": "{offer_url}?clickId={click_id}",
+    "postback_template": "http://{host}/postback?click_id={click_id}&payout={sum}"
+  },
+  "Datify.Link": {
+    "url_template": "{offer_url}?s1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={s1}&payout={revenue}"
+  },
+  "DepLab": {
+    "url_template": "{offer_url}?ref_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={ref_id}&payout={sum}&cnv_status={goal}"
+  },
+  "DirectAffiliate": {
+    "url_template": "{offer_url}?custom1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={custom1}&payout={payout_usd}&cnv_status={status}"
+  },
+  "EXGAMING": {
+    "url_template": "{offer_url}?sub_id1={click_id}&sub_id2={sub2}&sub_id3={sub3}&sub_id4={sub4}",
+    "postback_template": "http://{host}/postback?click_id={sub_id1}&payout={revenue}&cnv_status={goal}"
+  },
+  "Exness Affiliates": {
+    "url_template": "{offer_url}?clickid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={clickid}&payout={aff_value}"
+  },
+  "FAME": {
+    "url_template": "{offer_url}?subid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&payout={sum}"
+  },
+  "FoxOffers": {
+    "url_template": "{offer_url}?MPC_1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={MPC_1}"
+  },
+  "Gagarin Partners": {
+    "url_template": "{offer_url}/{click_id}",
+    "postback_template": "http://{host}/postback?click_id={subid1}&cnv_status={status}&payout={payment}"
+  },
+  "Gasmobi": {
+    "url_template": "{offer_url}?externalid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={externalid}&payout={payout}"
+  },
+  "Gloss Partners": {
+    "url_template": "{offer_url}?clickid={click_id}",
+    "postback_template": "http://{host}/postback?click_id=${clickid}"
+  },
+  "Golden Goose": {
+    "url_template": "{offer_url}?p1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={p1}&payout={profit}"
+  },
+  "GoldLead": {
+    "url_template": "{offer_url}?click_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={click_id}&payout={payout}&cnv_status={conversion_type}"
+  },
+  "Gotzha": {
+    "url_template": "{offer_url}?s2={click_id}",
+    "postback_template": "http://{host}/postback?click_id=#s2#&payout=#price#"
+  },
+  "ha9.ru": {
+    "url_template": "{offer_url}?utm_term={click_id}",
+    "postback_template": "http://{host}/postback?click_id={utm_term}&payout={sum}&cnv_status={status}"
+  },
+  "Heartbid": {
+    "url_template": "{offer_url}?c={click_id}",
+    "postback_template": "http://{host}/postback?click_id={clck}&payout={payout}"
+  },
+  "Huge Offers": {
+    "url_template": "{offer_url}?sub_id1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={{sub_id1}}&payout={{commission}}"
+  },
+  "iBET Agency": {
+    "url_template": "{offer_url}?p1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={p1}&payout={payout}&cnv_status={status}"
+  },
+  "Indoleads": {
+    "url_template": "{offer_url}?CLICK_ID={click_id}",
+    "postback_template": "http://{host}/postback?click_id={click_id}&payout={AMOUNT}"
+  },
+  "juddy.biz": {
+    "url_template": "{offer_url}?sub_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub_id}&payout={income}&cnv_status={type}"
+  },
+  "Kaizen.cpa": {
+    "url_template": "{offer_url}?sub_id1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub_id1}&payout={revenue}&cnv_status={status}"
+  },
+  "Kimia": {
+    "url_template": "{offer_url}?sub2={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub2}&payout={am}"
+  },
+  "Ku Partners": {
+    "url_template": "{offer_url}?aff_click_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={aff_click_id}&payout={payout}&cnv_status={conv_status}"
+  },
+  "KULT": {
+    "url_template": "{offer_url}?sub_id1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub_id1}&status=sale&payout={revenue}&currency={currency}&from=KULT"
+  },
+  "Lagoon": {
+    "url_template": "{offer_url}?vcode={click_id}",
+    "postback_template": "http://{host}/postback?click_id={vcode}&payout={amount}"
+  },
+  "Lead Beans": {
+    "url_template": "{offer_url}?subid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={subid}&payout={payout}"
+  },
+  "Leadreaktor": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&payout={profit}&cnv_status={status}"
+  },
+  "Leadrock": {
+    "url_template": "{offer_url}?subid1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={subid1}&cnv_status={status}&payout={lead_price}"
+  },
+  "LemonAd": {
+    "url_template": "{offer_url}&clickid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={clickid}&payout={payoutOrZero}&cnv_status={status}"
+  },
+  "LetsCPA": {
+    "url_template": "{offer_url}?sub2={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub2}&payout={sum}&cnv_status={status}"
+  },
+  "LGaming": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}"
+  },
+  "Lospollos.com": {
+    "url_template": "{offer_url}?cid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={cid}&payout={sum}"
+  },
+  "LuckyShop": {
+    "url_template": "{offer_url}?subid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={get.subid}&payout={amount}&cnv_status={status}"
+  },
+  "Magic Click Partners": {
+    "url_template": "{offer_url}?aff_click_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={aff_click_id}&payout={revenue}"
+  },
+  "MaxBounty": {
+    "url_template": "{offer_url}?s2={click_id}",
+    "postback_template": "http://{host}/postback?click_id=#S2#"
+  },
+  "McWap": {
+    "url_template": "{offer_url}?cnv_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={cnv_id}&payout={payout}"
+  },
+  "Meta CPA": {
+    "url_template": "{offer_url}/{click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&cnv_status={status_text}"
+  },
+  "Mobstra": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&payout={payout}"
+  },
+  "Monetizer": {
+    "url_template": "{offer_url}?cid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={clickID}&payout={amount}"
+  },
+  "Monsterleads": {
+    "url_template": "{offer_url}?subid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={subid}&payout={profit}&cnv_status={status}"
+  },
+  "Mostbet Partners": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&status={status}&payout={profit}"
+  },
+  "Mostbet Partners (Revshare)": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&status={status}&payout={rs}"
+  },
+  "MTRAF": {
+    "url_template": "{offer_url}?aff_click_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={aff_click_id}&status={status}&payout={payout}"
+  },
+  "Natifico": {
+    "url_template": "{offer_url}?ref_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={ref_id}&cnv_status={status}"
+  },
+  "Neogara": {
+    "url_template": "{offer_url}?group=REPLACE&pid=REPLACE&sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={{sub1}}&payout={{payoutSum}}"
+  },
+  "NetoPartners": {
+    "url_template": "{offer_url}?cid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={clickid}"
+  },
+  "OctoCPA": {
+    "url_template": "{offer_url}?aff_click_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={aff_click_id}&payout={payout}&cnv_currency={offer_currency}"
+  },
+  "Offerleader": {
+    "url_template": "{offer_url}?sub_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub_id}&cnv_status={status}"
+  },
+  "offer.store": {
+    "url_template": "{offer_url}?subid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={subid}&cnv_status={stage}&payout={payout}"
+  },
+  "Olimob CPA": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&payout={revenue}"
+  },
+  "Outbid": {
+    "url_template": "{offer_url}?sub2={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub2}&payout={payout_amount}"
+  },
+  "Partners.CPA.RIP": {
+    "url_template": "{offer_url}?aff_click_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={aff_click_id}&payout={payout}&cnv_status={goal_alias}"
+  },
+  "Partners.house": {
+    "url_template": "{offer_url}&p4={click_id}",
+    "postback_template": "http://{host}/postback?click_id={P4}&payout={MONEY}"
+  },
+  "PIN-UP Partners": {
+    "url_template": "{offer_url}/?subId1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={subId1}&payout={payment}&cnv_status=lead,sale,reject"
+  },
+  "PMaffiliates": {
+    "url_template": "{offer_url}?anid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={source_id1}"
+  },
+  "PROFITPEAK": {
+    "url_template": "{offer_url}?afp1={click_id}",
+    "postback_template": "http://{host}/postback?click_id=[afp1]"
+  },
+  "Propush.me": {
+    "url_template": "{offer_url}?ymid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={ymid}&payout={amount}"
+  },
+  "Revenue Lab": {
+    "url_template": "{offer_url}?s2={click_id}",
+    "postback_template": "http://{host}/postback?click_id={clickid}&cnv_status={status}"
+  },
+  "Revbooster": {
+    "url_template": "{offer_url}?subid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={subid}&payout={cash}&cnv_status={stage}&currency={currency}"
+  },
+  "RocketProfit": {
+    "url_template": "{offer_url}?sid1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sid1}&payout={payout}&currency={currency}&cnv_status={status}"
+  },
+  "RomanceNet": {
+    "url_template": "{offer_url}?cid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={cid}&payout={payout}"
+  },
+  "SalesDoubler": {
+    "url_template": "{offer_url}?transaction_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={TRANS_ID}&cnv_status={STATUS}&payout={AFF_REV}"
+  },
+  "Serious.Partners": {
+    "url_template": "{offer_url}?sub_id10={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub_id10}&payout={revenue}"
+  },
+  "Shakes.mobi": {
+    "url_template": "{offer_url}/{click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&payout={cost}"
+  },
+  "Shakes.pro": {
+    "url_template": "{offer_url}/{click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&payout={cost}&cnv_status={status}"
+  },
+  "Sigma Partners": {
+    "url_template": "{offer_url}?clickid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={clickid}&payout={payout_partner}"
+  },
+  "Spicyoffers": {
+    "url_template": "{offer_url}?clickid={click_id}",
+    "postback_template": "http://{host}/postback?click_id=[spicy_clickid]&payout=[spicy_payout_dot]"
+  },
+  "TheLimitedClub": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&payout={sum}&cnv_status={reg_dep}"
+  },
+  "TopOffers": {
+    "url_template": "{offer_url}?data2={click_id}",
+    "postback_template": "http://{host}/postback?click_id={Dat21}&payout={Payout}&currency={Currency}"
+  },
+  "TORO Advertising": {
+    "url_template": "{offer_url}?aff_sub={click_id}",
+    "postback_template": "http://{host}/postback?click_id={aff_sub}&payout={payout:dot_separated}"
+  },
+  "Trafee": {
+    "url_template": "{offer_url}?ext_click_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={ext_click_id}&payout={sum}"
+  },
+  "Traffic Company": {
+    "url_template": "{offer_url}?click_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={click_id}&payout={reward}"
+  },
+  "Traffic Light": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&payout={payout}&cnv_status={status}"
+  },
+  "TrafficPartner": {
+    "url_template": "{offer_url}?clicktag={click_id}",
+    "postback_template": "http://{host}/postback?click_id={clicktag}&payout={payout}"
+  },
+  "Trafflab": {
+    "url_template": "{offer_url}?ext_cid={click_id}",
+    "postback_template": "http://{host}/postback?click_id={ext_cid}&payout={sum}"
+  },
+  "TrumpYourAds": {
+    "url_template": "{offer_url}?custom1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={custom1}&cnv_status=REPLACE"
+  },
+  "V.Partners": {
+    "url_template": "{offer_url}?click_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id=##click_id##&payout=##CPA_AMOUNT##"
+  },
+  "ViceRoi": {
+    "url_template": "{offer_url}?sub2={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub2}&payout={sum}"
+  },
+  "Vortex Advertising": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}"
+  },
+  "VRB Cash": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&payout={amountEarned}&cnv_status={action}"
+  },
+  "Wap.click": {
+    "url_template": "{offer_url}?l1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={label1}&payout={sum_rub}&cnv_status={type}"
+  },
+  "WapAdvert": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&payout={price_rur}&cnv_status={type}"
+  },
+  "Webvork": {
+    "url_template": "{offer_url}?utm_content={click_id}",
+    "postback_template": "http://{host}/postback?click_id={utm_content}&payout={money}&cnv_status={status_lead}&currency={currency}"
+  },
+  "WelcomePartners": {
+    "url_template": "{offer_url}?click_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={click_id}&payout={payout}"
+  },
+  "WeweMedia": {
+    "url_template": "{offer_url}?sub3={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub3}&payout={payout_amount}"
+  },
+  "WHALE": {
+    "url_template": "{offer_url}?aff_click_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={aff_click_id}&payout={payout}"
+  },
+  "Xhive": {
+    "url_template": "{offer_url}?external_id={click_id}",
+    "postback_template": "http://{host}/postback?click_id={external_id}&payout={income}"
+  },
+  "Yeahmobi": {
+    "url_template": "{offer_url}?aff_sub={click_id}",
+    "postback_template": "http://{host}/postback?click_id={aff_sub}&payout={payout}"
+  },
+  "YTZ": {
+    "url_template": "{offer_url}?s1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={S1}&payout={REVENUE}"
+  },
+  "Zorka.Network": {
+    "url_template": "{offer_url}?sub1={click_id}",
+    "postback_template": "http://{host}/postback?click_id={sub1}&payout={sum}&cnv_status={status}&currency={currency}"
+  }
+}

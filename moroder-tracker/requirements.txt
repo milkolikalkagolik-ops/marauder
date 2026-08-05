@@ -1,0 +1,4 @@
+flask
+werkzeug
+psutil
+requests
