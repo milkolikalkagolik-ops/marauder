@@ -15,7 +15,7 @@ echo ""
 # --- Базовые зависимости ---
 echo ">>> Устанавливаю системные пакеты..."
 apt update -qq
-apt install -y -qq python3 python3-pip
+apt install -y -qq python3 python3-pip sqlite3 curl
 
 # --- Переходим в папку приложения ---
 mkdir -p /opt/moroder-tracker
@@ -29,14 +29,19 @@ if [ ! -f requirements.txt ]; then
 fi
 
 # Проверка наличия точки входа (run.py или app.py)
-if [ ! -f run.py ] && [ ! -f app.py ]; then
+ENTRY_POINT=""
+if [ -f run.py ]; then
+    ENTRY_POINT="run.py"
+elif [ -f app.py ]; then
+    ENTRY_POINT="app.py"
+else
     echo "❌ Ошибка: не найден run.py или app.py"
     exit 1
 fi
 
 # --- Установка Python-зависимостей ---
 echo ">>> Устанавливаю зависимости Python..."
-pip3 install --upgrade pip
+pip3 install --upgrade pip >/dev/null 2>&1 || true
 pip3 install -r requirements.txt
 
 # --- Освобождаем порт 5000, если занят ---
@@ -45,16 +50,17 @@ if ss -tulpn | grep -q ':5000 '; then
     echo "⚠️ Порт 5000 уже используется. Останавливаю старый процесс..."
     fuser -k 5000/tcp 2>/dev/null || true
     sleep 2
+    # Если всё ещё занят, убиваем принудительно
+    if ss -tulpn | grep -q ':5000 '; then
+        pkill -9 -f "python3.*$ENTRY_POINT" 2>/dev/null || true
+        sleep 2
+    fi
 fi
 
-# Определяем точку входа
-ENTRY_POINT="run.py"
-[ ! -f "$ENTRY_POINT" ] && ENTRY_POINT="app.py"
-
-# --- Создание systemd unit (если есть права) ---
-if [ -f marauder.service ]; then
-    echo ">>> Настраиваю автозапуск..."
-    cat > /etc/systemd/system/marauder.service <<EOF
+# --- Создание systemd unit или запуск вручную ---
+echo ">>> Настраиваю автозапуск..."
+SERVICE_FILE="/etc/systemd/system/marauder.service"
+cat > $SERVICE_FILE <<EOF
 [Unit]
 Description=Marauder Tracker
 After=network.target
@@ -69,16 +75,13 @@ User=root
 [Install]
 WantedBy=multi-user.target
 EOF
-    systemctl daemon-reload 2>/dev/null || true
-    systemctl enable marauder 2>/dev/null || true
-    systemctl start marauder 2>/dev/null || {
-        echo "⚠️ systemd не работает, запускаю вручную..."
-        nohup python3 "$ENTRY_POINT" > /var/log/marauder.log 2>&1 &
-    }
-else
-    echo "⚠️ marauder.service не найден, запускаю Flask вручную..."
-    nohup python3 "$ENTRY_POINT" > /var/log/marauder.log 2>&1 &
-fi
+
+systemctl daemon-reload 2>/dev/null || true
+systemctl enable marauder 2>/dev/null || true
+systemctl start marauder 2>/dev/null || {
+    echo "⚠️ systemd не работает, запускаю вручную..."
+    nohup python3 $ENTRY_POINT > /var/log/marauder.log 2>&1 &
+}
 
 # --- Файервол ---
 if command -v ufw >/dev/null; then
@@ -96,6 +99,7 @@ if ss -tulpn | grep -q ':80 '; then
             service $pkg stop 2>/dev/null || systemctl stop $pkg 2>/dev/null || true
         fi
     done
+    # Если всё ещё занят, выводим ошибку
     if ss -tulpn | grep -q ':80 '; then
         echo "❌ Не удалось освободить порт 80. Освободите его вручную и перезапустите установку."
         exit 1
@@ -135,12 +139,14 @@ EOF
     nginx -t
 
     echo ">>> Запускаю Nginx..."
+    # Запуск с fallback
     if systemctl enable nginx 2>/dev/null; then
         systemctl start nginx 2>/dev/null || service nginx start
     else
         service nginx enable 2>/dev/null || true
         service nginx start
     fi
+    # Если сервис не запустился, пробуем запустить напрямую
     if ! ss -tulpn | grep -q ':80 '; then
         echo "⚠️ Nginx не запустился через сервис, пробую запустить вручную..."
         nginx
@@ -152,7 +158,42 @@ else
     echo ">>> Проверьте, что порт 5000 открыт в файерволе."
 fi
 
-# --- Проверки после установки ---
+# --- Ожидание запуска приложения и вставка домена ---
+echo ">>> Ожидаю запуск приложения..."
+# Ждём максимум 15 секунд, пока порт 5000 не начнёт слушаться
+for i in {1..15}; do
+    if ss -tulpn | grep -q ':5000 '; then
+        break
+    fi
+    sleep 1
+done
+
+if ss -tulpn | grep -q ':5000 '; then
+    echo "✅ Marauder запущен"
+else
+    echo "❌ Marauder не запустился. Смотрите лог: /var/log/marauder.log"
+    tail -n 20 /var/log/marauder.log || true
+    exit 1
+fi
+
+# Вставка домена в базу данных, если он был введён
+if [ "$USE_DOMAIN" = "y" ] || [ "$USE_DOMAIN" = "Y" ]; then
+    echo ">>> Сохраняю домен в базе данных..."
+    python3 - <<PY
+import sqlite3, time
+conn = sqlite3.connect('/opt/moroder-tracker/tracker.db')
+cur = conn.cursor()
+# Вставляем домен
+cur.execute("INSERT OR IGNORE INTO domains (domain, is_default) VALUES (?, 1)", ("$DOMAIN",))
+# Обновляем settings
+cur.execute("INSERT OR REPLACE INTO settings (key, value) VALUES ('domain', ?)", ("$DOMAIN",))
+conn.commit()
+conn.close()
+print("Домен сохранён")
+PY
+fi
+
+# --- Финальное сообщение ---
 IP=$(hostname -I | awk '{print $1}')
 echo ""
 echo "=============================================="
