@@ -15,7 +15,7 @@ echo ""
 # --- Базовые зависимости ---
 echo ">>> Устанавливаю системные пакеты..."
 apt update -qq
-apt install -y -qq python3 python3-pip build-essential python3-dev libssl-dev libffi-dev
+apt install -y -qq python3 python3-pip
 
 # --- Переходим в папку приложения ---
 mkdir -p /opt/moroder-tracker
@@ -28,14 +28,32 @@ if [ ! -f requirements.txt ]; then
     exit 1
 fi
 
+# Проверка наличия точки входа (run.py или app.py)
+if [ ! -f run.py ] && [ ! -f app.py ]; then
+    echo "❌ Ошибка: не найден run.py или app.py"
+    exit 1
+fi
+
 # --- Установка Python-зависимостей ---
 echo ">>> Устанавливаю зависимости Python..."
 pip3 install --upgrade pip
 pip3 install -r requirements.txt
 
-# --- Копируем systemd unit (если systemd доступен) ---
+# --- Освобождаем порт 5000, если занят ---
+echo ">>> Проверяю порт 5000..."
+if ss -tulpn | grep -q ':5000 '; then
+    echo "⚠️ Порт 5000 уже используется. Останавливаю старый процесс..."
+    fuser -k 5000/tcp 2>/dev/null || true
+    sleep 2
+fi
+
+# Определяем точку входа
+ENTRY_POINT="run.py"
+[ ! -f "$ENTRY_POINT" ] && ENTRY_POINT="app.py"
+
+# --- Создание systemd unit (если есть права) ---
 if [ -f marauder.service ]; then
-    echo ">>> Копирую marauder.service..."
+    echo ">>> Настраиваю автозапуск..."
     cat > /etc/systemd/system/marauder.service <<EOF
 [Unit]
 Description=Marauder Tracker
@@ -43,7 +61,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/opt/moroder-tracker
-ExecStart=/usr/bin/python3 /opt/moroder-tracker/app.py
+ExecStart=/usr/bin/python3 /opt/moroder-tracker/$ENTRY_POINT
 Restart=always
 RestartSec=5
 User=root
@@ -55,11 +73,11 @@ EOF
     systemctl enable marauder 2>/dev/null || true
     systemctl start marauder 2>/dev/null || {
         echo "⚠️ systemd не работает, запускаю вручную..."
-        nohup python3 app.py > /var/log/marauder.log 2>&1 &
+        nohup python3 "$ENTRY_POINT" > /var/log/marauder.log 2>&1 &
     }
 else
     echo "⚠️ marauder.service не найден, запускаю Flask вручную..."
-    nohup python3 app.py > /var/log/marauder.log 2>&1 &
+    nohup python3 "$ENTRY_POINT" > /var/log/marauder.log 2>&1 &
 fi
 
 # --- Файервол ---
@@ -73,13 +91,11 @@ fi
 echo ">>> Проверяю порт 80..."
 if ss -tulpn | grep -q ':80 '; then
     echo "⚠️ Порт 80 уже используется. Пытаюсь остановить конфликтующий процесс..."
-    # Попробуем остановить известные веб-серверы
     for pkg in apache2 nginx lighttpd; do
         if command -v $pkg >/dev/null; then
             service $pkg stop 2>/dev/null || systemctl stop $pkg 2>/dev/null || true
         fi
     done
-    # Если всё ещё занят, выводим ошибку
     if ss -tulpn | grep -q ':80 '; then
         echo "❌ Не удалось освободить порт 80. Освободите его вручную и перезапустите установку."
         exit 1
@@ -119,14 +135,12 @@ EOF
     nginx -t
 
     echo ">>> Запускаю Nginx..."
-    # Запуск с fallback
     if systemctl enable nginx 2>/dev/null; then
         systemctl start nginx 2>/dev/null || service nginx start
     else
         service nginx enable 2>/dev/null || true
         service nginx start
     fi
-    # Если сервис не запустился, пробуем запустить напрямую
     if ! ss -tulpn | grep -q ':80 '; then
         echo "⚠️ Nginx не запустился через сервис, пробую запустить вручную..."
         nginx
