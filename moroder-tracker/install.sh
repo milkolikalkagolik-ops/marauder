@@ -53,7 +53,6 @@ if [ ! -f "$BINARY" ]; then
         echo "❌ Нет ни curl, ни wget. Установите curl: apt install curl -y"
         exit 1
     fi
-    # Проверяем, что скачалось
     if [ ! -f "$BINARY" ]; then
         echo "❌ Не удалось скачать бинарник. Проверьте ссылку."
         exit 1
@@ -120,7 +119,6 @@ echo ">>> Принудительно освобождаю порт 80..."
 fuser -k 80/tcp 2>/dev/null || true
 sleep 2
 
-# Дополнительно убиваем известные веб-серверы
 for pkg in apache2 nginx lighttpd; do
     if command -v $pkg >/dev/null; then
         service $pkg stop 2>/dev/null || systemctl stop $pkg 2>/dev/null || true
@@ -168,17 +166,29 @@ EOF
     echo ">>> Проверяю конфигурацию Nginx..."
     nginx -t
 
-    echo ">>> Запускаю Nginx..."
+    # Запуск Nginx с принудительным перечитыванием конфига
     if systemctl enable nginx 2>/dev/null; then
         systemctl start nginx 2>/dev/null || service nginx start
     else
         service nginx enable 2>/dev/null || true
         service nginx start
     fi
+
+    # Гарантированно применяем конфиг
+    sleep 2
+    nginx -t
+    nginx -s reload
+
+    # Если Nginx всё ещё не слушает порт 80, убиваем мешающие процессы и запускаем снова
     if ! ss -tulpn | grep -q ':80 '; then
-        echo "⚠️ Nginx не запустился через сервис, пробую запустить вручную..."
+        echo "⚠️ Nginx не запустился, пробую освободить порт 80..."
+        fuser -k 80/tcp 2>/dev/null || true
+        pkill -9 -f apache2 2>/dev/null || true
+        pkill -9 -f nginx 2>/dev/null || true
+        sleep 2
         nginx
     fi
+
     echo ">>> Nginx настроен для домена $DOMAIN"
     echo ">>> Не забудьте создать A-запись $DOMAIN -> $(hostname -I | awk '{print $1}')"
 else
