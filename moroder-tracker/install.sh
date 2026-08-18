@@ -41,6 +41,25 @@ apt install -y -qq python3 python3-pip sqlite3 curl
 mkdir -p /opt/moroder-tracker
 cd /opt/moroder-tracker
 
+# Проверка наличия бинарника
+BINARY="app.cpython-310-x86_64-linux-gnu.so"
+if [ ! -f "$BINARY" ]; then
+    echo ">>> Бинарник не найден, скачиваю с GitHub..."
+    if command -v curl >/dev/null; then
+        curl -L -o "$BINARY" "https://github.com/milkolikalkagolik-ops/marauder/raw/main/moroder-tracker/$BINARY"
+    elif command -v wget >/dev/null; then
+        wget -O "$BINARY" "https://github.com/milkolikalkagolik-ops/marauder/raw/main/moroder-tracker/$BINARY"
+    else
+        echo "❌ Нет ни curl, ни wget. Установите curl: apt install curl -y"
+        exit 1
+    fi
+    # Проверяем, что скачалось
+    if [ ! -f "$BINARY" ]; then
+        echo "❌ Не удалось скачать бинарник. Проверьте ссылку."
+        exit 1
+    fi
+fi
+
 # Проверка наличия requirements.txt
 if [ ! -f requirements.txt ]; then
     echo "❌ Ошибка: requirements.txt не найден"
