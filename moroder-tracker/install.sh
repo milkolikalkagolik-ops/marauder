@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 # Проверка root
 if [ "$EUID" -ne 0 ]; then
@@ -12,6 +11,27 @@ echo "     УСТАНОВКА МАРОДЁР ТРЕКЕРА"
 echo "=============================================="
 echo ""
 
+# --- Очистка предыдущей установки ---
+echo ">>> Очищаю предыдущую установку..."
+systemctl stop marauder 2>/dev/null || true
+systemctl disable marauder 2>/dev/null || true
+rm -f /etc/systemd/system/marauder.service
+systemctl daemon-reload 2>/dev/null || true
+
+# Убить процессы на порту 5000
+if ss -tulpn | grep -q ':5000 '; then
+    echo "⚠️ Порт 5000 занят. Освобождаю..."
+    fuser -k 5000/tcp 2>/dev/null || true
+    sleep 2
+    pkill -9 -f "python3.*run.py" 2>/dev/null || true
+    pkill -9 -f "python3.*app.py" 2>/dev/null || true
+    sleep 1
+fi
+
+# Удаляем старые .so и базу данных
+rm -f /opt/moroder-tracker/*.so
+rm -f /opt/moroder-tracker/*.db
+
 # --- Базовые зависимости ---
 echo ">>> Устанавливаю системные пакеты..."
 apt update -qq
@@ -23,12 +43,12 @@ cd /opt/moroder-tracker
 
 # Проверка наличия requirements.txt
 if [ ! -f requirements.txt ]; then
-    echo "❌ Ошибка: requirements.txt не найден в /opt/moroder-tracker"
-    echo "Убедитесь, что файлы приложения скопированы в эту папку"
+    echo "❌ Ошибка: requirements.txt не найден"
+    echo "Убедитесь, что файлы приложения скопированы в /opt/moroder-tracker"
     exit 1
 fi
 
-# Проверка наличия точки входа (run.py или app.py)
+# Определяем точку входа
 ENTRY_POINT=""
 if [ -f run.py ]; then
     ENTRY_POINT="run.py"
@@ -44,23 +64,9 @@ echo ">>> Устанавливаю зависимости Python..."
 pip3 install --upgrade pip >/dev/null 2>&1 || true
 pip3 install -r requirements.txt
 
-# --- Освобождаем порт 5000, если занят ---
-echo ">>> Проверяю порт 5000..."
-if ss -tulpn | grep -q ':5000 '; then
-    echo "⚠️ Порт 5000 уже используется. Останавливаю старый процесс..."
-    fuser -k 5000/tcp 2>/dev/null || true
-    sleep 2
-    # Если всё ещё занят, убиваем принудительно
-    if ss -tulpn | grep -q ':5000 '; then
-        pkill -9 -f "python3.*$ENTRY_POINT" 2>/dev/null || true
-        sleep 2
-    fi
-fi
-
-# --- Создание systemd unit или запуск вручную ---
+# --- Создание systemd unit ---
 echo ">>> Настраиваю автозапуск..."
-SERVICE_FILE="/etc/systemd/system/marauder.service"
-cat > $SERVICE_FILE <<EOF
+cat > /etc/systemd/system/marauder.service <<EOF
 [Unit]
 Description=Marauder Tracker
 After=network.target
@@ -90,23 +96,28 @@ if command -v ufw >/dev/null; then
     ufw allow 5000/tcp
 fi
 
-# --- Проверка и освобождение порта 80 ---
-echo ">>> Проверяю порт 80..."
-if ss -tulpn | grep -q ':80 '; then
-    echo "⚠️ Порт 80 уже используется. Пытаюсь остановить конфликтующий процесс..."
-    for pkg in apache2 nginx lighttpd; do
-        if command -v $pkg >/dev/null; then
-            service $pkg stop 2>/dev/null || systemctl stop $pkg 2>/dev/null || true
-        fi
-    done
-    # Если всё ещё занят, выводим ошибку
-    if ss -tulpn | grep -q ':80 '; then
-        echo "❌ Не удалось освободить порт 80. Освободите его вручную и перезапустите установку."
-        exit 1
+# --- Освобождение порта 80 ---
+echo ">>> Принудительно освобождаю порт 80..."
+fuser -k 80/tcp 2>/dev/null || true
+sleep 2
+
+# Дополнительно убиваем известные веб-серверы
+for pkg in apache2 nginx lighttpd; do
+    if command -v $pkg >/dev/null; then
+        service $pkg stop 2>/dev/null || systemctl stop $pkg 2>/dev/null || true
     fi
+done
+pkill -9 -f apache2 2>/dev/null || true
+pkill -9 -f nginx 2>/dev/null || true
+pkill -9 -f lighttpd 2>/dev/null || true
+sleep 2
+
+if ss -tulpn | grep -q ':80 '; then
+    echo "❌ Порт 80 всё ещё занят. Освободите его вручную и перезапустите установку."
+    exit 1
 fi
 
-# --- ОПЦИОНАЛЬНАЯ НАСТРОЙКА ДОМЕНА ---
+# --- Настройка домена ---
 echo ""
 read -p "Хотите привязать свой домен и настроить Nginx? (y/n): " USE_DOMAIN
 
@@ -139,14 +150,12 @@ EOF
     nginx -t
 
     echo ">>> Запускаю Nginx..."
-    # Запуск с fallback
     if systemctl enable nginx 2>/dev/null; then
         systemctl start nginx 2>/dev/null || service nginx start
     else
         service nginx enable 2>/dev/null || true
         service nginx start
     fi
-    # Если сервис не запустился, пробуем запустить напрямую
     if ! ss -tulpn | grep -q ':80 '; then
         echo "⚠️ Nginx не запустился через сервис, пробую запустить вручную..."
         nginx
@@ -158,9 +167,8 @@ else
     echo ">>> Проверьте, что порт 5000 открыт в файерволе."
 fi
 
-# --- Ожидание запуска приложения и вставка домена ---
+# --- Ожидание запуска приложения ---
 echo ">>> Ожидаю запуск приложения..."
-# Ждём максимум 15 секунд, пока порт 5000 не начнёт слушаться
 for i in {1..15}; do
     if ss -tulpn | grep -q ':5000 '; then
         break
@@ -171,27 +179,38 @@ done
 if ss -tulpn | grep -q ':5000 '; then
     echo "✅ Marauder запущен"
 else
-    echo "❌ Marauder не запустился. Смотрите лог: /var/log/marauder.log"
-    tail -n 20 /var/log/marauder.log || true
+    echo "❌ Marauder не запустился. Смотрите логи: journalctl -u marauder или /var/log/marauder.log"
     exit 1
 fi
 
-# Вставка домена в базу данных, если он был введён
+# Вставка домена в базу данных
 if [ "$USE_DOMAIN" = "y" ] || [ "$USE_DOMAIN" = "Y" ]; then
     echo ">>> Сохраняю домен в базе данных..."
     python3 - <<PY
-import sqlite3, time
+import sqlite3
 conn = sqlite3.connect('/opt/moroder-tracker/tracker.db')
 cur = conn.cursor()
-# Вставляем домен
 cur.execute("INSERT OR IGNORE INTO domains (domain, is_default) VALUES (?, 1)", ("$DOMAIN",))
-# Обновляем settings
 cur.execute("INSERT OR REPLACE INTO settings (key, value) VALUES ('domain', ?)", ("$DOMAIN",))
 conn.commit()
 conn.close()
 print("Домен сохранён")
 PY
 fi
+
+# --- Создание администратора ---
+echo ">>> Создаю пользователя admin/admin..."
+python3 - <<PY
+import sqlite3
+from werkzeug.security import generate_password_hash
+
+conn = sqlite3.connect('/opt/moroder-tracker/tracker.db')
+cur = conn.cursor()
+cur.execute("INSERT OR IGNORE INTO users (username, password_hash, role) VALUES ('admin', ?, 'admin')", (generate_password_hash('admin'),))
+conn.commit()
+conn.close()
+print("Пользователь admin/admin создан.")
+PY
 
 # --- Финальное сообщение ---
 IP=$(hostname -I | awk '{print $1}')
@@ -202,7 +221,7 @@ echo ""
 if ss -tulpn | grep -q ':5000 '; then
     echo "✅ Marauder слушает порт 5000"
 else
-    echo "❌ Marauder не запустился. Смотрите лог: /var/log/marauder.log"
+    echo "❌ Marauder не запустился. Проверьте логи."
 fi
 if [ "$USE_DOMAIN" = "y" ] || [ "$USE_DOMAIN" = "Y" ]; then
     if ss -tulpn | grep -q ':80 '; then
